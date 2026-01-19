@@ -18,6 +18,10 @@
     dev.exec = "bunx serve .";
     lint.exec = "biome check .";
     "lint:fix".exec = "biome check --write .";
-    deploy.exec = "wrangler pages deploy . --project-name=ascii-retouch";
+    deploy.exec = ''
+      rm -rf dist && mkdir -p dist
+      cp index.html style.css app.js retouch.js dist/
+      wrangler pages deploy dist --project-name=ascii-retouch
+    '';
   };
 }

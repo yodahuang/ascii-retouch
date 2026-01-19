@@ -12,6 +12,6 @@ devenv.local.yaml
 # Dependencies
 node_modules/
 
-# Misc
-.envrc
-t
+# Deploy
+dist/
+
