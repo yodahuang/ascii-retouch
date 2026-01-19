@@ -9,6 +9,8 @@
   packages = [
     pkgs.claude-code
     pkgs.biome
+    pkgs.gh
+    pkgs.wrangler
   ];
 
   scripts = {
@@ -16,5 +18,6 @@
     dev.exec = "bunx serve .";
     lint.exec = "biome check .";
     "lint:fix".exec = "biome check --write .";
+    deploy.exec = "wrangler pages deploy . --project-name=ascii-retouch";
   };
 }
