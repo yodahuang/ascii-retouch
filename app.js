@@ -13,7 +13,9 @@ function setStatus(message, duration = 2000) {
   clearTimeout(statusTimeout);
   status.textContent = message;
   if (message && duration) {
-    statusTimeout = setTimeout(() => { status.textContent = ""; }, duration);
+    statusTimeout = setTimeout(() => {
+      status.textContent = "";
+    }, duration);
   }
 }
 
@@ -26,7 +28,7 @@ async function copyOutput(text) {
   try {
     await navigator.clipboard.writeText(text);
     setStatus("Copied to clipboard.");
-  } catch (error) {
+  } catch {
     setStatus("Could not copy. Check browser permissions.");
   }
 }

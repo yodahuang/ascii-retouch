@@ -8,7 +8,19 @@ const BOX_V = "│";
 const LEFT_EDGE_CHARS = new Set([BOX_TL, BOX_BL, BOX_V]);
 const RIGHT_EDGE_CHARS = new Set([BOX_TR, BOX_BR, BOX_V]);
 
-const CONNECTORS = new Set(["│", "|", "v", "^", "┴", "┬", "┼", "├", "┤", "╵", "╷"]);
+const CONNECTORS = new Set([
+  "│",
+  "|",
+  "v",
+  "^",
+  "┴",
+  "┬",
+  "┼",
+  "├",
+  "┤",
+  "╵",
+  "╷",
+]);
 
 const TAB_WIDTH = 2;
 const EDGE_TOLERANCE = 4;
@@ -18,7 +30,7 @@ function normalizeLines(input) {
   return input
     .replace(/\r\n?/g, "\n")
     .split("\n")
-    .map(line => line.replace(/\t/g, " ".repeat(TAB_WIDTH)).trimEnd());
+    .map((line) => line.replace(/\t/g, " ".repeat(TAB_WIDTH)).trimEnd());
 }
 
 function findCharInRange(line, chars, center, tolerance) {
@@ -48,8 +60,18 @@ function detectBoxes(lines) {
       for (let bottom = top + 1; bottom < lines.length; bottom++) {
         const bottomLine = lines[bottom];
 
-        const blPos = findCharInRange(bottomLine, new Set([BOX_BL]), col, EDGE_TOLERANCE);
-        const brPos = findCharInRange(bottomLine, new Set([BOX_BR]), topRight, EDGE_TOLERANCE);
+        const blPos = findCharInRange(
+          bottomLine,
+          new Set([BOX_BL]),
+          col,
+          EDGE_TOLERANCE,
+        );
+        const brPos = findCharInRange(
+          bottomLine,
+          new Set([BOX_BR]),
+          topRight,
+          EDGE_TOLERANCE,
+        );
 
         if (blPos !== -1 && brPos !== -1 && blPos < brPos) {
           // Found a box - now find the true extents by checking all lines
@@ -59,8 +81,18 @@ function detectBoxes(lines) {
           // Check middle lines for edge positions
           for (let j = top + 1; j < bottom; j++) {
             const midLine = lines[j];
-            const leftEdge = findCharInRange(midLine, LEFT_EDGE_CHARS, minLeft, EDGE_TOLERANCE);
-            const rightEdge = findCharInRange(midLine, RIGHT_EDGE_CHARS, maxRight, EDGE_TOLERANCE);
+            const leftEdge = findCharInRange(
+              midLine,
+              LEFT_EDGE_CHARS,
+              minLeft,
+              EDGE_TOLERANCE,
+            );
+            const rightEdge = findCharInRange(
+              midLine,
+              RIGHT_EDGE_CHARS,
+              maxRight,
+              EDGE_TOLERANCE,
+            );
             if (leftEdge !== -1) minLeft = Math.min(minLeft, leftEdge);
             if (rightEdge !== -1) maxRight = Math.max(maxRight, rightEdge);
           }
@@ -78,7 +110,7 @@ function detectBoxes(lines) {
             topLeft: col,
             topRight,
             bottomLeft: blPos,
-            bottomRight: brPos
+            bottomRight: brPos,
           });
           break;
         }
@@ -145,13 +177,23 @@ const HORIZ_LINE = "─";
 // Check if line segment is a horizontal border (top/bottom of box)
 function isHorizontalBorder(inner) {
   const nonSpace = inner.replace(/ /g, "");
-  return nonSpace.length > 0 && [...nonSpace].every(c => c === HORIZ_LINE);
+  return nonSpace.length > 0 && [...nonSpace].every((c) => c === HORIZ_LINE);
 }
 
 // Extract and normalize a box segment to canonical width
 function extractBoxSegment(line, box) {
-  const leftEdge = findCharInRange(line, LEFT_EDGE_CHARS, box.left, EDGE_TOLERANCE);
-  const rightEdge = findCharInRange(line, RIGHT_EDGE_CHARS, box.right, EDGE_TOLERANCE);
+  const leftEdge = findCharInRange(
+    line,
+    LEFT_EDGE_CHARS,
+    box.left,
+    EDGE_TOLERANCE,
+  );
+  const rightEdge = findCharInRange(
+    line,
+    RIGHT_EDGE_CHARS,
+    box.right,
+    EDGE_TOLERANCE,
+  );
 
   if (leftEdge === -1 || rightEdge === -1) {
     const start = Math.max(0, box.left);
@@ -181,7 +223,7 @@ function extractBoxSegment(line, box) {
   return {
     text: leftChar + paddedInner + rightChar,
     originalLeft: leftEdge,
-    originalRight: rightEdge
+    originalRight: rightEdge,
   };
 }
 
@@ -201,9 +243,9 @@ export function retouchDiagram(input) {
 
   // Cluster boxes and find anchors
   const clusters = clusterBoxes(boxes);
-  const anchors = clusters.map(cluster => ({
+  const anchors = clusters.map((cluster) => ({
     boxes: cluster,
-    center: findAnchor(cluster)
+    center: findAnchor(cluster),
   }));
 
   // If all connectors form a single column, merge all clusters
@@ -221,13 +263,13 @@ export function retouchDiagram(input) {
     const colSpread = Math.max(...connectorCols) - Math.min(...connectorCols);
     if (colSpread <= CLUSTER_THRESHOLD) {
       const allBoxes = boxes;
-      const widest = allBoxes.reduce((a, b) => b.width > a.width ? b : a);
+      const widest = allBoxes.reduce((a, b) => (b.width > a.width ? b : a));
       finalAnchors = [{ boxes: allBoxes, center: widest.center }];
     }
   }
 
   // Build result with box segments properly placed
-  const result = lines.map(line => line.split(""));
+  const result = lines.map((line) => line.split(""));
 
   // Ensure result arrays are long enough
   const ensureLength = (arr, len) => {
@@ -246,7 +288,11 @@ export function retouchDiagram(input) {
         // Clear old position (use wider range to handle misaligned edges)
         const clearStart = Math.min(segment.originalLeft, box.left);
         const clearEnd = Math.max(segment.originalRight, box.right);
-        for (let i = clearStart; i <= clearEnd && i < result[lineIdx].length; i++) {
+        for (
+          let i = clearStart;
+          i <= clearEnd && i < result[lineIdx].length;
+          i++
+        ) {
           result[lineIdx][i] = " ";
         }
 
@@ -260,7 +306,7 @@ export function retouchDiagram(input) {
   }
 
   // Convert back to strings and trim
-  const output = result.map(chars => chars.join("").trimEnd());
+  const output = result.map((chars) => chars.join("").trimEnd());
 
   // Shift connector lines
   for (let i = 0; i < output.length; i++) {
@@ -270,7 +316,7 @@ export function retouchDiagram(input) {
     const positions = getConnectorPositions(line);
     if (positions.length === 0) continue;
 
-    const findNearestAnchor = pos => {
+    const findNearestAnchor = (pos) => {
       let best = finalAnchors[0];
       let bestDist = Math.abs(pos - best.center);
       for (const a of finalAnchors) {
