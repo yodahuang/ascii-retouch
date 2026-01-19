@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ASCII Retouch</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>ASCII Retouch</h1>
+        <p class="subtitle">Align misaligned text diagrams. Runs locally in your browser.</p>
+      </header>
+
+      <div class="workspace">
+        <div class="pane">
+          <label for="input">Input</label>
+          <textarea id="input" placeholder="Paste your diagram here..." wrap="off"></textarea>
+        </div>
+        <div class="pane">
+          <label for="output">Output</label>
+          <textarea id="output" readonly wrap="off"></textarea>
+          <div class="controls">
+            <button id="retouch" type="button" class="primary">Retouch + Copy</button>
+            <button id="copy" type="button" class="secondary">Copy</button>
+            <span id="status" class="status"></span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

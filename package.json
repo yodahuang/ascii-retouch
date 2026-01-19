@@ -1,0 +1,9 @@
+{
+  "name": "ascii-retouch",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "bun test",
+    "dev": "bunx serve ."
+  }
+}
